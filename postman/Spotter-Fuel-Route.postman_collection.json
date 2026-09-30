@@ -1,0 +1,12 @@
+{
+  "info": {"name": "Spotter Fuel Route", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+  "variable": [{"key": "base_url", "value": "http://127.0.0.1:8000"}],
+  "item": [
+    {"name": "NYC to Chicago (POST)", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}],
+      "url": "{{base_url}}/api/route/", "body": {"mode": "raw", "raw": "{\"start\": \"New York, NY\", \"finish\": \"Chicago, IL\"}"}}},
+    {"name": "NYC to LA (POST, multiple stops)", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}],
+      "url": "{{base_url}}/api/route/", "body": {"mode": "raw", "raw": "{\"start\": \"New York, NY\", \"finish\": \"Los Angeles, CA\"}"}}},
+    {"name": "Coordinates input (no geocoding call)", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}],
+      "url": "{{base_url}}/api/route/", "body": {"mode": "raw", "raw": "{\"start\": \"40.7128,-74.0060\", \"finish\": \"34.0522,-118.2437\"}"}}}
+  ]
+}
