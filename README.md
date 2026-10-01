@@ -48,7 +48,7 @@ Response (trimmed):
 1. **Geocode** start and finish with Nominatim (free). Skipped for `lat,lon` input and for repeats (cache).
 2. **Route** with the free OSRM server: a single call, cached in memory and in SQLite.
 3. **Stations near the route**: the CSV is loaded once per process; a grid index over the route
-   finds stations within `STATION_CORRIDOR_MILES` (default 15) in milliseconds.
+   finds stations within `STATION_CORRIDOR_MILES` (default 30) in milliseconds.
 4. **Optimise** (`routing/services/optimizer.py`): classic gas-station greedy, exact for continuous fuel:
    buy just enough to reach the first cheaper station in range; otherwise fill up and drive to the cheapest
    station in range; buy only what is needed to finish. Tests compare it against a brute-force DP.
@@ -72,3 +72,18 @@ External calls per new request: 1 route + up to 2 geocodes (= 3); repeat request
 3. (0:45) Open `/api/map/` and show the route with stops.
 4. (1:45) Code: `planner.py` flow, `stations.py` grid index, `optimizer.py` greedy + brute-force test.
 5. (0:30) Assumptions above.
+
+## Known limitations and production notes
+
+- **Corridor (30 miles):** station coordinates are city centroids, so a station can sit several miles from
+  its real exit. A 30-mile corridor avoids false "no station in range" results; the cost is that a chosen
+  station may be a short detour off the highway (detour fuel is not priced in).
+- **Starting fuel:** the assignment does not give it. A full 50-gallon tank is assumed and not charged,
+  so `total_cost` is the cost of fuel bought at stops, not the whole trip's historical fuel spend.
+- **Duplicate prices:** the CSV has no timestamps, so for repeated truck-stop IDs the lowest price is used.
+- **Distance along route:** station position uses geographic projection onto the OSRM polyline, scaled to
+  OSRM's road distance. It is an approximation, not turn-by-turn network distance.
+- **Public services:** OSRM and Nominatim demo servers are fair-use. Results are cached; production should
+  self-host or use a paid plan.
+- **Production hardening (not needed for the assessment):** PostgreSQL + Redis (shared cache across
+  workers), authentication and rate limiting on the API.

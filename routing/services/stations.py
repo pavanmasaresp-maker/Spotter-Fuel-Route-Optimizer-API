@@ -57,7 +57,9 @@ class StationIndex:
         pts = [coords[i] for i in keep]
         ppos = [pos[i] for i in keep]
 
-        cell = self.CELL
+        max_abs_lat = max(abs(pt[1]) for pt in pts)
+        cell = max(self.CELL, (corridor_miles + spacing_miles) * 1.1
+                   / (69.17 * max(0.2, math.cos(math.radians(max_abs_lat)))))
         grid = {}
         for k, (lon, lat) in enumerate(pts):
             grid.setdefault((math.floor(lon / cell), math.floor(lat / cell)), []).append(k)
