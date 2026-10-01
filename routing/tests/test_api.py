@@ -40,6 +40,8 @@ class PlannerTests(TestCase):
          "price_per_gallon": 3.10},
         {"id": "b", "name": "B", "address": "", "city": "Y", "state": "IL", "lat": 40.0, "lon": -90.0,
          "price_per_gallon": 2.90},
+        {"id": "c", "name": "C", "address": "", "city": "Z", "state": "IL", "lat": 40.0, "lon": -95.0,
+         "price_per_gallon": 3.00},
     ]
 
     @patch("routing.services.planner.has_enriched_data", return_value=True)
