@@ -62,8 +62,9 @@ MAP_HTML = """<!doctype html>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 var map = L.map('map').setView([39.5, -98.35], 4);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-  {maxZoom: 18, attribution: '&copy; OpenStreetMap contributors'}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+  {maxZoom: 19, subdomains: 'abcd',
+   attribution: '&copy; OpenStreetMap contributors &copy; CARTO'}).addTo(map);
 var layer = L.layerGroup().addTo(map);
 var info = document.getElementById('info');
 
