@@ -47,8 +47,10 @@ Response (trimmed):
 
 1. **Geocode** start and finish with Nominatim (free). Skipped for `lat,lon` input and for repeats (cache).
 2. **Route** with the free OSRM server: a single call, cached in memory and in SQLite.
-3. **Stations near the route**: the CSV is loaded once per process; a grid index over the route
-   finds stations within `STATION_CORRIDOR_MILES` (default 30) in milliseconds.
+3. **Stations near the route**: the CSV is loaded once per process. The route geometry is sampled
+   (about every 2 miles) and indexed into a spatial grid. Each station is visited once: a cheap bounding-box
+   check rejects far-away stations, and the rest are compared only against nearby grid cells instead of every
+   route segment, keeping those within `STATION_CORRIDOR_MILES` (default 30).
 4. **Optimise** (`routing/services/optimizer.py`): classic gas-station greedy, exact for continuous fuel:
    buy just enough to reach the first cheaper station in range; otherwise fill up and drive to the cheapest
    station in range; buy only what is needed to finish. Tests compare it against a brute-force DP.
