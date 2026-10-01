@@ -9,6 +9,10 @@ from .geo import point_to_segment_miles, route_positions
 DATA_DIR = Path(__file__).resolve().parents[2] / "data"
 ENRICHED = DATA_DIR / "fuel_prices_enriched.csv"
 
+US_STATES = frozenset(
+    "AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY".split()
+)
+
 
 def _normalise(row):
     return {k.strip().lower().replace(" ", "_"): (v or "").strip() for k, v in row.items() if k}
@@ -20,6 +24,8 @@ def load_stations(path=ENRICHED):
     with open(path, encoding="utf-8-sig", newline="") as f:
         for raw in csv.DictReader(f):
             r = _normalise(raw)
+            if r.get("state", "").upper() not in US_STATES:
+                continue  # the CSV also contains Canadian stops (ON, AB, BC, ...)
             try:
                 price = float(r["retail_price"])
                 lat, lon = float(r["latitude"]), float(r["longitude"])

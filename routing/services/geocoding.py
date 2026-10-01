@@ -7,6 +7,10 @@ from django.core.cache import cache
 
 from routing.models import GeocodeCache
 from .errors import PlanError
+from .throttle import Throttle
+
+# Nominatim public usage policy: at most 1 request per second
+_THROTTLE = Throttle(1.1)
 
 LATLON = re.compile(r"^\s*(-?\d{1,2}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)\s*$")
 # contiguous USA bounding box
@@ -36,6 +40,7 @@ def geocode_location(query, stats, label="location"):
         return result
 
     try:
+        _THROTTLE.wait()
         stats["external_calls"] += 1
         r = requests.get(
             settings.NOMINATIM_URL + "/search",

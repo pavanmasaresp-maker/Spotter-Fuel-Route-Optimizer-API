@@ -87,3 +87,8 @@ External calls per new request: 1 route + up to 2 geocodes (= 3); repeat request
   self-host or use a paid plan.
 - **Production hardening (not needed for the assessment):** PostgreSQL + Redis (shared cache across
   workers), authentication and rate limiting on the API.
+- **US-only data:** the supplied CSV also lists Canadian truck stops (ON, AB, BC, ...). They are dropped
+  when loading and when enriching, because the route is limited to the contiguous USA.
+- **Nominatim rate limit:** calls to the public geocoder are spaced at least 1.1 seconds apart (policy: 1 request/second),
+  so a cold request with two geocodes takes about a second longer. Cached or `lat,lon` requests are not delayed.
+- **GET vs POST:** `POST /api/route/` is the main endpoint. `GET` exists for browser testing and the map page.

@@ -34,6 +34,12 @@ class StationIndexTests(unittest.TestCase):
         found = StationIndex(st).along_route(self.coords, self.total, 15)
         self.assertEqual([s["id"] for s in found], ["a", "b"])
 
+    def test_wide_corridor_finds_far_station_and_narrow_does_not(self):
+        far = self.station("far", -85.0, 40.0 + 35 / 69.0)   # about 35 miles off the route
+        idx = StationIndex([far])
+        self.assertEqual(idx.along_route(self.coords, self.total, 30), [])
+        self.assertEqual([s["id"] for s in idx.along_route(self.coords, self.total, 40)], ["far"])
+
     def test_cross_country_speed(self):
         import time
         rnd = random.Random(3)

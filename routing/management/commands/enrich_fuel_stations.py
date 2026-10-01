@@ -14,7 +14,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from routing.services.gazetteer import norm_city, parse_gazetteer
-from routing.services.stations import DATA_DIR, ENRICHED
+from routing.services.stations import DATA_DIR, ENRICHED, US_STATES
 
 GEONAMES_URL = "https://download.geonames.org/export/dump/US.zip"
 SOURCE = DATA_DIR / "fuel_prices.csv"
@@ -48,6 +48,9 @@ class Command(BaseCommand):
             if sid not in best or price < float(best[sid]["retail_price"]):
                 best[sid] = r
         stations = list(best.values())
+        before = len(stations)
+        stations = [r for r in stations if r["state"].upper() in US_STATES]
+        self.stdout.write(f"Dropped {before - len(stations)} non-US stations (Canada etc.)")
         wanted = {(norm_city(r["city"]), r["state"].upper()) for r in stations}
         self.stdout.write(f"{len(stations)} stations, {len(wanted)} unique city/state pairs")
 
